@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1000">
+<title>jQuery.bezierCurve</title>
+<link href="http://fonts.googleapis.com/css?family=Ubuntu:400,500,700" rel="stylesheet" type="text/css">
+<link href="style.css" rel="stylesheet">
+<script src="jquery-1.9.1.min.js"></script>
+<script src="jquery.easing.js"></script>
+<script src="../src/jquery.bezierCurve.js"></script>
+<script src="script.js"></script>
+</head>
+<body>
+<div id="wrapper">
+  <header id="header">
+    <h1>jQuery bezierCurve<span>jQuery animate拡張プラグインbezierCurveの紹介ページ</span></h1>
+  </header>
+
+  <nav id="glo-nav">
+    <ul>
+      <li><a href="#howto">How to use</a></li>
+      <li class="has-child">
+        <a href="#method">Method</a>
+        <ul class="child">
+          <li><a href="#addPoint">addPoint</a></li>
+          <li><a href="#reverse">reverse</a></li>
+          <li><a href="#rotate">rotate</a></li>
+          <li><a href="#canvasSimulator">canvasSimulator</a></li>
+        </ul>
+      </li>
+      <li><a href="#notes">notes</a></li>
+    </ul>
+  </nav>
+
+  <div id="contents">
+    <div class="wrap">
+      <div id="first-view">
+        <img src="img/car-yellow.png" alt="" class="target1">
+        <img src="img/car-blue.png" alt="" class="target2">
+      </div>
+
+      <p>このページではjQueryのanimateメソッドを拡張するプラグイン、jQuery.bezierCurveをご紹介します。<br>このプラグインを使えばjQuery単体では実現困難だったFlashみたいな曲線的な動きが実装できるようになります!</p>
+
+      <p>しかもJSだからiPhoneでもグニャグニャ動きます!<br><span class="small">※スマホではスクロール時にアニメーション描画自体が停止するので、スクロール中は動作が停止してしまいます。</span></p>
+      <p>ダウンロードは<a href="">こちら</a>から</p>
+    </div>
+
+    <div class="wrap">
+      <p class="text">このプラグインではN次ベジェ曲線の公式を用いてパスを引き、それに沿って下記のように絶対配置の要素をアニメーションさせることができます。<br></p>
+
+      <dl id="first-demo" class="demo">
+        <dt class="title">DEMO1</dt>
+        <dd class="view">
+          <div class="target"></div>
+        </dd>
+      </dl>
+    </div>
+
+    <section id="howto">
+      <h1 class="section-title">How to use</h1>
+      <p class="text">使い方はまず、jQueryとjquery.bezierCurve.jsを読み込みます。</p>
+<pre>
+&lt;script src=&quot;/path/jquery.js&quot;&gt;
+&lt;script src=&quot;/path/jquery.bezierCurve.js&quot;&gt;
+
+<span class="co">&lt;!-- /path/にはファイルを設置したディレクトリを指定。 --&gt;</span>
+</pre>
+
+      <p class="text">続いて動かしたい要素をposition: absolute;で配置。</p>
+<pre>
+<span class="co">&lt;!-- HTML --&gt;</span>
+&lt;div id=&quot;hoge-parent&quot;&gt;
+  &lt;div id=&quot;hoge&quot;&gt;HOGEHOGE&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+<pre>
+<span class="co">/* CSS */</span>
+#hoge-parent {
+  position: relative;
+}
+#hoge {
+  position: absolute;
+}
+</pre>
+
+      <p class="text">そしてJSで下記のように記述をします。</p>
+
+<pre>
+  $(&quot;#hoge&quot;).animate({
+    bezierPath: $.bezierCurve(x, y)  <span class="co">//スタート地点(横方向, 縦方向)</span>
+      .addPoint(x, y)  <span class="co">//追加座標(横方向, 縦方向)</span>
+      .addPoint(angle, length, true)  <span class="co">//追加座標(角度, 距離, 角度指定をon)</span>
+  }, duration, "easing", callback);
+</pre>
+
+      <p>指定の仕方は$.bezierCurve()の引数にスタート地点をx(横方向の座標), y(縦方向の座標)で指定し、addPointメソッドでさらに座標を追加していきます。<br><a href="#addPoint">addPoint</a>の詳しい使い方は後述いたします。</p>
+      <p>jQueryのanimateのプロパティに新たに<strong>bezierPath</strong>が追加されておりますので、そこで$.bezierCurveの返り値を入れればOKです。</p>
+
+      <p class="text">animateメソッドを拡張しているだけなので、もちろんopacity操作などの他のプロパティとの併用や、duration・easing・callback関数の使用もできます。</p>
+
+      <p class="text">$.bezierCurve自体はaddPointで追加された座標を格納し、animate実行時に動作させるパスを生成するオブジェクトを返します。<br>ですので、ご使用される場合上記の様な使い方もありですが、下記のように一度変数に格納した方が使いやすいかもしれません。</p>
+
+<pre>
+var path = $.bezierCurve(x, y).addPoint(x, y).addPoint(angle, length, true).addPoint(x, y);
+
+$(&quot;#hoge&quot;).animate({bezierPath: path}, duration, &quot;easing&quot;, callback);
+</pre>
+    </section>
+
+    <section id="method">
+      <h1>Method</h1>
+      <p>$.bezierCurveには下記の四つのメソッドがあります。</p>
+      <ul>
+        <li>addPoint()</li>
+        <li>reverse()</li>
+        <li>rotate()</li>
+        <li>canvasSimulator()</li>
+      </ul>
+
+      <p class="text">ここでは、一つずつ説明していきます。</p>
+
+      <section id="addPoint">
+        <h2>addPoint</h2>
+        <p>$.bezierCurveを使用する際に必須のメソッドとなっております。<br>一度も指定されなかった場合、エラーは起こしませんが、要素は$.bezierCurveの引数に入れたスタート地点から一切動きません。</p>
+        <p>$.bezierCurve自体に指定したスタート地点の引数に続き指定された順に座標を格納していきます。<br>指定の仕方は下記のようにメソッドチェーンで指定することができます。</p>
+
+<pre>
+var path = $.bezierCurve(x, y)
+  .addPoint(x, y, is_angle)
+  .addPoint(angle, length, is_angle)
+  .addPoint(x, y, is_angle);
+</pre>
+
+        <p>第三引数(is_angle)が未指定もしくは、falseだった場合、第一引数がx(横方向の座標)、第二引数がy(縦方向の座標)となります。<br>第三引数(is_angle)がtrueだった場合、第一引数をスタート地点の座標を基点とした角度、第二引数をスタート地点からの距離で指定することができます。<br><span class="small">※角度はradian(弧度)ではなくdegree(度)でご指定ください。</span></p>
+        <p>指定した要素が実際に通過する座標は最初に$.bezierCurveの引数で指定したスタート地点と最後にaddPointで指定された座標になります。<br>途中にaddPointで指定された座標はすべてIllustratorのペンツールに例えるとハンドルとして判別されます。</p>
+      </section>
+
+      <section id="reverse">
+        <h2>reverse</h2>
+        <p class="text">一度格納したパスと反対方向から動かすことができます。</p>
+
+<pre>
+var path = $.bezierCurve(0, 0).addPoint(400, 200).addPoint(0, 370);
+
+$(&quot;hoge&quot;).animate({bezierPath: path}, 3000)
+  .animate({bezierPath: path.reverse()}, 3000);
+</pre>
+
+        <dl id="second-demo" class="demo">
+          <dt class="title">DEMO2</dt>
+          <dd class="view"><div class="target"></div></dd>
+        </dl>
+
+        <p class="text">上記のデモでは、上(0, 0)から下(0, 370)へパスを指定し、次のキューでreverse()を使用することにより、そのままパスをなぞってスタート地点へ戻しています。</p>
+
+        <p>また、下記のようにメソッドチェーンで他のメソッドと併用することも可能です。</p>
+<pre>
+var path = $.bezierCurve(0, 0).addPoint(400, 200).addPoint(0, 370);
+
+$(&quot;hoge&quot;).animate({bezierPath: path}, 3000)
+  .animate({
+    bezierPath: path.reverse().rotate().canvasSimulator()
+  }, 3000);
+</pre>
+      </section>
+
+      <section id="rotate">
+        <h2>rotate</h2>
+        <p class="text">rotateメソッドはパスに応じて要素の角度を変化させるメソッドです。<br>下記の座標指定では、飛行機の角度を変えてアクロバット飛行させてみてます。</p>
+
+<pre>
+var path = $.bezierCurve(980, 200).addPoint(140, 800, true)
+      .addPoint(260, 400, true)
+      .addPoint(200, 800, true)
+      .addPoint(160, 800, true)
+      .addPoint(100, 800, true)
+      .addPoint(270, 800, true)
+      .addPoint(175, 1400, true);
+
+$(&quot;hoge&quot;).animate({bezierPath: path.rotate()}, 5000, "easeInSine");
+</pre>
+
+        <dl id="third-demo" class="demo">
+          <dt class="title">DEMO3</dt>
+          <dd class="view">
+            <img src="img/plane.png" alt="" width="100" class="target">
+          </dd>
+        </dl>
+
+        <p>使い方はaddPointで座標を指定した後に、rotate()を実行するのみ。</p>
+        <p>rotate自体の処理としては、animate実行時に格納した座標に応じたパスを生成する処理に合わせ、現在地から次に移動する座標までの角度を取得するオブジェクトを返します。</p>
+
+        <p>また、下記のようにメソッドチェーンで他のメソッドと併用することも可能です。</p>
+
+<pre>
+var path = $.bezierCurve(980, 200).addPoint(140, 800, true)
+      .addPoint(260, 400, true)
+      .addPoint(200, 800, true)
+      .addPoint(160, 800, true)
+      .addPoint(100, 800, true)
+      .addPoint(270, 800, true)
+      .addPoint(175, 1400, true);
+
+$(&quot;hoge&quot;).animate({
+  bezierPath: path.rotate().reverse().canvasSimulator()
+}, 5000, "easeInSine");
+</pre>
+
+        <p>rotateメソッドの対応ブラウザはIE9以上となります。</p>
+      </section>
+
+      <section id="canvasSimulator">
+        <h2>canvasSimulator</h2>
+        <p class="text">このメソッドでは、自分の指定した座標位置と生成されたパスをcanvasを使用して視覚的にシミュレートすることできます。</p>
+
+        <dl id="fourth-demo" class="demo">
+          <dt class="title">DEMO4</dt>
+          <dd class="view"><div class="target"></div></dd>
+        </dl>
+
+        <dl>
+          <dt>指定例</dt>
+          <dd>
+<pre>
+var path = $.bezierCurve(x, y)
+  .addPoint(angle, length, true)
+  .addPoint(angle, length, true)
+  .addPoint(x, y);
+
+$(&quot;hoge&quot;).animate(
+  {bezierPath: path.canvasSimulator($(&quot;hoge-parent&quot;))},
+  duration, &quot;easing&quot;, callback
+);
+</pre>
+          </dd>
+        </dl>
+
+        <p class="text">canvasSimulatorメソッドの引数にはアニメーションをさせる要素の基準となる(position:relative もしくは position: absoluteの)親要素をjQueryオブジェクトで指定してください。<br>親要素が正しく指定されなかったり、引数が空だった場合は、canvasSimulatorは無視され通常動作のみが実行されます。</p>
+
+        <p>$.bezierCurveでは上記のように生成されたパスを要素の左上を基準にアニメーションさせます。<br>細かくパスを指定したいときなどにcanvasSimulatorを使用して、調整を行ってください。</p>
+
+        <p>canvasSimulator実行後にaddPointで座標を指定することは可能ですが、canvas上のパスには反映されません。<br>基本canvasSimulatorは最後に実行するものとしてください。</p>
+
+        <p>同親要素内で使用できるシミュレータは一つまでとなっています。<br>尚、canvasSimulatorメソッドはIE9以降よりご使用いただけます。</p>
+      </section>
+    </section>
+
+    <section id="notes">
+      <h1>notes</h1>
+      <p>やっぱN次ベジェ曲線だと、「どう指定したらどう動くのか」が直感的にわかりづらいですね。</p>
+      <p>当ページメインビジュアルの車の座標指定はちょっとしんどかったです。(笑</p>
+      <p>これからまた時間ができたら、Illustratorみたいにアンカーポイントとハンドルを別々に指定できるようにしたいと思ってます。<br>その他にもIE対応など、改善できる箇所は結構ありそうなので、のらりくらりと改修していきたいと思います。</p>
+      <p>ライセンス自体はMITでの配布ですので、なにか使い道がありそうでしたら、商用でもご自由にお使いください。<br><span class="small">※MITでの配布になりますので、当プラグインを使用して発生しました障害などには一切の責任を負いません。<br>ご了承の上ご利用ください。</span></p>
+      <p>ダウンロードは<a href="">こちら</a>から</p>
+    </section>
+  </div>
+
+  <footer id="footer">
+    <p>copyright 2014 (C) All Rights reserved.</p>
+  </footer>
+</div>
+</body>
+</html>
