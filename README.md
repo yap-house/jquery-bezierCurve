@@ -26,6 +26,7 @@ IE8以下で動作しないメソッドは下記の[**メソッド**]項目で�
 ```
 
 $.bezierCurveの第一引数にスタート地点のX座標、第二引数にY座標を指定します。  
+※引数の指定は必須です。  
 addPointメソッドで座標を追加していき、animateメソッドで**bezierPath**を実行します。  
 ```js
 var path = $.bezierCurve(x, y)
@@ -44,28 +45,26 @@ $.bezierCurveの詳細についてはデモページに記載してあります�
 
 ##メソッド
 ここでは$.bezierCurveのメソッドを一つずつ紹介いたします。  
-ここでの説明は簡易的なものになりますので、詳しくはデモページ**Method**項目をご覧ください。  
-[デモページ: Method][DEMO03]
+ここでの説明は簡易的なものになりますので、詳しくは[デモページのMethod項目][DEMO03]をご覧ください。  
 
 ###addPoint
 $.bezierCurveを動作させるのに*必須*のメソッドになります。  
-このメソッドを指定しなかった場合$.bezierCurveは引数で指定した位置から動作することはありません。
+このメソッドを指定しなかった場合、$.bezierCurveは引数で指定した位置から動作することはありません。
 
 指定の仕方は下記になります。  
 ```js
 $bezierCurve(x, y).addPoint(a, b, is_angle);
 ```
 
-第三引数*is_angle*が空、もしくは*false*の場合、第一引数*a*はX座標、第二引数*b*はY座標での指定となります。  
-第三引数*is_angle*がtrueの場合、$.bezierCurveの引数に指定したスタート地点の座標を基点として、第一引数*a*を角度、第二引数*b*を距離で指定することができます。  
+第三引数**is_angle**が空、もしくは*false*の場合、第一引数**a**はX座標、第二引数**b**はY座標での指定となります。  
+第三引数**is_angle**がtrueの場合、$.bezierCurveの引数に指定したスタート地点の座標を基点として、第一引数**a**を角度、第二引数**b**を距離で指定することができます。  
 ```js
 $.bezierCurve(x, y)
   .addPoint(x, y) //is_angleが空なので、第一引数がX座標、第二引数がY座標
   .addPoint(angle, length, true) //is_angleがtrueなので第一引数が角度、第二引数が距離
 ```
 
-詳しくはデモページの*addPoint*項目をご確認ください。  
-[デモページ: addPoint][DEMO04]
+詳しくは[デモページのaddPoint][DEMO04]をご覧ください。  
 
 ###reverse
 $.bezierCurveで生成したパスをそのまま反転させます。  
@@ -79,12 +78,11 @@ $("#hoge").animate({bezierPath: path}, duration, easing, callback)
   .animate({bezierPath: path.reverse()}, duration, easing, callback);
 ```
 
-詳しくはデモページをどうぞ。  
-[デモページ: reverse][DEMO05]
+詳しくは[デモページのreverse][DEMO05]をご覧ください。  
 
 ###rotate
 $.bezierCurveで生成したパスの進行方向に合わせて、要素の角度を変えることができます。  
-※IE9以上の対応メソッドです。
+※IE9以上の対応メソッドです。  
  IE8以下で使用した場合は無視されます。
 ```js
 var path = $.bezierCurve(x, y)
@@ -96,8 +94,7 @@ $("#hoge").animate({bezierPath: path.rotate()}, duration, easing, callback)
   .animate({bezierPath: path.reverse().rotate()}, duration, easing, callback);
 ```
 
-詳しくはデモページをどうぞ。  
-[デモページ: rotate][DEMO06]
+詳しくは[デモページのrotate][DEMO06]をご覧ください。  
 
 ###canvasSimulator
 $.bezierCurveで指定した座標位置と生成したパスを、HTML5のcanvasを使用することで視覚的に確認ができます。  
@@ -112,11 +109,15 @@ var path = $.bezierCurve(x, y)
 $("#hoge").animate({bezierPath: path.canvasSimulator($("#hoge-wrap"))}, duration, easing, callback);
 ```
 
-引数にはアニメーションさせる要素の基準となる親要素(position: relative or static)の要素を指定。※必須になります。
+引数にはアニメーションさせる要素の基準となる親要素(position: relative or absolute)の要素を指定。  
+※引数の指定は必須になります。
 
-詳細はデモページをどうぞ。  
-[デモページ: canvasSimulator][DEMO07]
+詳細は[デモページのcanvasSimulator][DEMO07]をご覧ください。  
 
+##ライセンスについて
+MITで配布になりますので、なにか使い道がありましたら商用でもご自由にお使いください。
+
+当プラグインを利用して発生した障害などについては、MITでの配布のため、一切の責任を負いませんので、ご了承の上ご利用ください。
 
 [DEMO01]: http://okazaki-takama.github.io/jquery-bezierCurve/
 [DEMO02]: http://okazaki-takama.github.io/jquery-bezierCurve/#howto
