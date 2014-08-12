@@ -10,19 +10,19 @@ IE8以下で動作しないメソッドは下記の[メソッド]項目で記述
 ##使い方
 まず動かしたい要素を絶対配置で指定します。  
 ```HTML
-&lt;style&gt;
-\#hoge-wrap \{
+<style>
+#hoge-wrap {
   position: relative;
-\}
+}
 
-\#hoge \{
+#hoge {
   position: absolute;
-\}
-&lt;/style&gt;
+}
+</style>
 
-&lt;div id=&quot;hoge-wrap&quot;&gt;
-  &lt;div id=&quot;hoge&quot;&gt;
-&lt;/div&gt;
+<div id="hoge-wrap">
+  <div id="hoge"></div>
+</div>
 ```
 
 $.bezierCurveの第一引数にスタート地点のX座標、第二引数にY座標を指定します。
@@ -33,7 +33,7 @@ var path = $.bezierCurve(x, y)
   .addPoint(angle, length, true)
   .addPoint(x, y);
 
-  $(&quot;#hoge&quot;).animate({bezierPath: path}, duration, easing, callback);
+  $("#hoge").animate({bezierPath: path}, duration, easing, callback);
 ```
 
 $.bezierCurveはaddPointメソッドで追加された座標を格納し、animateを実行した際に、格納した座標をもとにN次ベジェ曲線の公式を用いて曲線的なパスを生成します。
