@@ -1,0 +1,21 @@
+{
+    "name": "bezierCurve",
+    "title": "jQuery bezierCurve", 
+    "author": {
+        "name": "Takama Okazaki@Aluco.co.,Ltd"
+    },
+    "licenses": [{
+        "type":"MIT",
+        "url": "https://github.com/okazaki-takama/jquery-bezierCurve/blob/master/LICENSE.txt"
+    }],
+    "description": "jQuery animate拡張プラグイン",
+    "dependencies": {
+        "jquery": ">=1.9"
+    },
+    "keywords": ["bezier","curve", "animate"],
+    "version": "1.0.0",
+    "files": ["jquery.bezierCurve.js"],
+    "download":"https://github.com/okazaki-takama/jquery-bezierCurve/archive/master.zip",
+    "homepage": "https://github.com/okazaki-takama/jquery-bezierCurve/",
+    "docs": "https://github.com/okazaki-takama/jquery-bezierCurve/"
+}
